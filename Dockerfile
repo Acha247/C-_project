@@ -1,15 +1,17 @@
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-WORKDIR /app
-COPY *.sln .
-COPY /MyWebApp/*.csproj  ./
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
+WORKDIR /App
+
+# Copy everything
+COPY . ./
+# Restore as distinct layers
 RUN dotnet restore
-COPY . .
-RUN dotnet publish -c release -o /app/publish
+# Build and publish a release
+RUN dotnet publish -c Release -o out
 
-FROM mcr.microsoft.com/dotnet/aspnet:8.0  
+# Build runtime image
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
+WORKDIR /App
+COPY --from=build-env /App/out .
+EXPOSE 80
+ENTRYPOINT ["dotnet", "MyWebApp.dll"]
 
-WORKDIR /app
-COPY  --from=build /app/publish .
-
-EXPOSE 5000
-ENTRYPOINT [ "dotnet", "/app/publish/MyWebApp.dll" ]
