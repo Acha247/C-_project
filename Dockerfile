@@ -13,9 +13,6 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /App
 COPY --from=build-env /App/out .
 EXPOSE 80
-<<<<<<< HEAD
-ENTRYPOINT ["dotnet", "MyWebApp.dll"]
-=======
+
 ENTRYPOINT ["dotnet", "MyWebApp.dll"]
 
->>>>>>> 65c0f7c71bfb7f54f7ad0ac3b6a118b7aa635c8e
