@@ -5,13 +5,12 @@ WORKDIR /App
 COPY . ./
 # Restore as distinct layers
 RUN dotnet restore
-COPY . .
-RUN dotnet publish -c release -o out
+# Build and publish a release
+RUN dotnet publish -c Release -o out
 
-FROM mcr.microsoft.com/dotnet/aspnet:8.0  AS runtime
-
-WORKDIR /app
-COPY  --from=build /App/out .
-
-EXPOSE 5000
-ENTRYPOINT [ "dotnet", "MyWebApp.dll" ]
+# Build runtime image
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
+WORKDIR /App
+COPY --from=build-env /App/out .
+EXPOSE 80
+ENTRYPOINT ["dotnet", "MyWebApp.dll"]
